@@ -1,0 +1,9 @@
+ //Save images in a Folder.
+if( !@copy(http://imageLink.com, './folder/imageName.jpg')) {
+    $errors= error_get_last();
+    echo "COPY ERROR: ".$errors['type'];
+    echo "<br />\n".$errors['message'];
+  } else {
+    echo "File copied from remote!";
+  }
+}
