@@ -1,3 +1,5 @@
+* Problema: * Este sistema não permite mais consultar a última atualização feita - apenas a primeira. 
+
 # Rastreamento de Pedidos - Correios
 Script para Rastreamento de Pedidos dos Correios usando PHP + SOAP.
 
