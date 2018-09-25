@@ -1,0 +1,180 @@
+
+<script>
+    $(document).ready(function(){
+		// from http://stackoverflow.com/questions/19578111/how-to-add-clone-form-fields-using-jquery-and-increment-ids-and-names
+		// this will add a new row of fields each time user clicks 'add extra line' button
+		
+        //We will be using an unique index number for each new instance of the cloned form
+        var item_number_form_index=0;
+        
+		//When the button is clicked (or Enter is pressed while it's selected)
+        $("#addnewitemline").click(function(){
+            //Increment the unique index cause we are creating a new instance of the form
+            item_number_form_index++;
+			
+            //Clone the form and place it just before the button's <p>. Also give its id a unique index
+            $(this).parent().before($("#itemaddline").clone().attr("id","itemaddline" + item_number_form_index));
+            
+			//Make the clone visible by changing CSS
+            $("#itemaddline" + item_number_form_index).css("display","inline");
+            
+			//For each input fields contained in the cloned form...
+            $("#itemaddline" + item_number_form_index + " :input").each(function(){
+                //Modify the name attribute by adding the index number at the end of it
+                $(this).attr("name",$(this).attr("name") + item_number_form_index);
+                //Modify the id attribute by adding the index number at the end of it
+                $(this).attr("id",$(this).attr("id") + item_number_form_index);			
+            });
+			$("#itemaddline" + item_number_form_index + " span.itemnum").text(item_number_form_index);
+        }); 
+	// add some item lines by default. (this pretends the button has been clicked three times on load)	
+	$( "#addnewitemline" ).trigger( "click" );	
+	$( "#addnewitemline" ).trigger( "click" );	
+	$( "#addnewitemline" ).trigger( "click" );	
+	
+// if they select it is a new supplier then show reason box and make it required.
+ $('#frm-newsupplier').change(function () {
+    var reqreason = $('#frm-newsupplier').val();
+    if(reqreason == "Yes")  {
+		$("#reasonhidden").fadeIn( "slow" );
+		$("#frm-Reason").attr("required","true");
+    } else { // but if they then select no, do the opposite.
+		$("#reasonhidden").fadeOut( "slow" );
+		$("#frm-Reason").removeAttr("required");
+	}	
+});
+
+// Update the total cost when quantity/cost/vat fields updated.
+// if the cost field for any line item changes.
+$('.cost').change(function () {
+	updatecosttotals();
+});
+$('.quantity').change(function () {
+	updatecosttotals();
+});
+
+var updatecosttotals = function() {
+	var totalcost = 0;
+	$('.itemline').each(function() { // for each item fieldset on the entire form#
+		var rawcost = $(this).find(".cost").val();
+		rawcost = rawcost.replace("\u00A3",""); // stupid unicode poundsign (this removes the £, if there is one)
+		rawcost = rawcost.replace(",","."); 
+		var thiscost = parseFloat(rawcost); // convert the cost field to a float.
+		if (!isNaN(thiscost)) { // if not not a number, ie if it is a number
+			var thisquantity = parseInt($(this).find(".quantity").val()); // get the quantity.
+			var itemtotal = thiscost * thisquantity; // total item cost is quantity x cost
+			totalcost = totalcost + itemtotal; // add this cost to the running total
+			$(this).find(".itemtotal").text("total: " + itemtotal.toFixed(2)); //print it below the cost box
+		}
+	});
+	$("#frm-totalcost").val(totalcost.toFixed(2)); // update total field.
+}	
+});
+</script>
+<style type="text/css"><!--
+.pur_col1:first-child, .pur_col2:first-child, .pur_col3:first-child, .pur_col4:first-child, .pur_col5:first-child, .pur_col6:first-child  {
+	height:30px;
+}
+
+.pur_col1 {
+width:20px;
+}
+
+
+.pur_col2 {
+width:250px;
+
+float:left;
+}
+.pur_col3 {
+width:90px;
+float:left;
+}
+.pur_col4 {
+width:80px;
+float:left;
+}
+.pur_col5 {
+width:60px;
+float:left;
+}
+/* cost */
+.pur_col6 {
+	width:70px;
+	float:left;
+}
+.purlineitem {
+	float:left;
+	border: 1px solid black;
+	min-height: 60px;
+	font-size:0.9em;
+	padding:2px;
+}	
+.hidden {
+    display: none;
+}
+fieldset {
+	padding:3px;
+}
+--></style>
+<form class="style1" id="purchaseorder" action="NoThinG" method="post">
+
+	<fieldset >
+		<h2 style="margin:0;">Formulário de Ordem de Compra</h2>
+		<h3 style="margin:0;">Fornecedor</h3>
+		<fieldset>
+			<dl style="float:left;margin-right:20px;">
+				<dt><label for="frm-supplier">* Fornecedor:</label></dt><dd><input type="text" class="validar" id="frm-supplier"  required  maxlength="100" size="35" name="Supplier" /></dd>
+			</dl>
+			<dl style="float:left;">
+				<dt><label for="frm-costcode">CNPJ:</label></dt>
+				<dd><input id="frm-costcode" type="text" class="validar" maxlength="100" name="costcode" size="35" type="text" /></dd>
+			</dl>
+		</fieldset>
+		<h3 style="margin:0;">Itens</h3>
+		<p > Clique em"Add Linha" caso precise de mais de 3 itens.</p>
+		<fieldset>
+			<div style="width:610px;display:inline;">
+				<div class="pur_col1 purlineitem">#</div>
+				<div class="pur_col3 purlineitem">Nosso Código</div>
+				<div class="pur_col2 purlineitem">Descrição do(s) Item(s)</div>
+				<!-- <div class="pur_col4 purlineitem">Catalogue page</div> -->
+				<div class="pur_col5 purlineitem">Quantida.</div>
+				<div class="pur_col6 purlineitem">Custo (Unidade)</div>
+				
+				<div style="clear:both"></div>
+			</div>
+
+			<div style="width:610px;" class="hidden itemline" id="itemaddline">
+				<div class="pur_col1 purlineitem">
+					<span class="itemnum">
+					</span>
+				</div>
+				<div class="pur_col3 purlineitem">
+					<input id="frm-catid" type="text" class="validar" maxlength="10" name="catid_" size="8" type="text" />
+				</div>
+				<div class="pur_col2 purlineitem">
+					<textarea id="frm-Item" cols="27" rows="3" name="Item_"></textarea>
+				</div>
+				
+				<div class="pur_col5 purlineitem">
+					<input id="frm-numofitems" class="quantity validar" maxlength="6" name="num_of_Items_" size="1"  type="text" value="1" />
+				</div>
+				<div class="pur_col6 purlineitem">
+					<input id="frm-cost" type="text" class="cost validar" maxlength="10" name="Cost" size="3" type="text" /> 
+					<div class="itemtotal" style="font-size:0.9em"> </div>
+				</div>
+				<div style="clear:both"></div>
+			</div>
+			<p> <input type="button" class="submit" value="Add Linha" id="addnewitemline"></p>
+
+			<dl>
+				<dt><label for="frm-totalcost" >Custo Total:</label></dt>
+				<dd><input id="frm-totalcost" type="text" class="validar"  maxlength="10" name="totalcost" size="8" type="text" disabled /></dd>
+				<dt><label for="frm-addinfo">Informações Adicionais:</label></dt>
+				<dd><textarea id="frm-addinfo" cols="60" rows="5" name="AdditionalInformation"></textarea></dd>
+			</dl>
+			<div style="clear:both"><input type="submit" class="submit" value="Submit" /></div>
+		</fieldset>
+	</fieldset>
+</form>
