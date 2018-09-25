@@ -18,3 +18,5 @@
   * Data(s) de Pagto(s)
 - Validar Cnpj digitado
 - Data Entrada
+- Script p/ receber os dados digitados
+- Limpar e Organizar
