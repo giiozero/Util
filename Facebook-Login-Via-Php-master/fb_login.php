@@ -58,7 +58,8 @@ if (!isset($accessToken)) {//Usuário Deslogado
 	  
 	} catch(Facebook\Exceptions\FacebookSDKException $e) {
 	  //echo 'Facebook SDK returned an error: ' . $e->getMessage();
-	  echo '<meta HTTP-EQUIV="Refresh" CONTENT="0; URL=http://ppadeiro.sytes.net/backup/write/3/index.php">';
+		//ALTERAR URL DE RETORNO AQUI
+	  echo '<meta HTTP-EQUIV="Refresh" CONTENT="0; URL=http://url.com">';
 	}
 }
 ?>
